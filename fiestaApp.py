@@ -20,15 +20,14 @@ if not st.session_state.logged_in:
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
-    login_button = st.button("Login")
 
-    if login_button:
+    if st.button("Login"):
         if USER_CREDENTIALS.get(username) == password:
             st.session_state.logged_in = True
             st.toast("🎉 Login successful!")
-            st.experimental_rerun()
         else:
             st.error("Invalid username or password.")
+
     st.stop()
 
 

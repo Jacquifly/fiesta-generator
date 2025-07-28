@@ -13,41 +13,36 @@ import time
 
 # --- Session state setup ---
 # --- Initialize session state ---
+# --- Session state setup ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "just_logged_in" not in st.session_state:
     st.session_state.just_logged_in = False
-if "login_attempted" not in st.session_state:
-    st.session_state.login_attempted = False
 
-# --- If not logged in, show the login form ---
+# --- LOGIN FORM ---
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
+    # ✅ Login form captures Enter key AND button clicks
     with st.form("login_form"):
         st.text_input("Username", key="login_username")
         st.text_input("Password", type="password", key="login_password")
-        submit_login = st.form_submit_button("Login")
+        login_submitted = st.form_submit_button("Login")
 
-    # Store whether login button was pressed
-    if submit_login:
-        st.session_state.login_attempted = True
-
+    if login_submitted:
         username = st.session_state.login_username
         password = st.session_state.login_password
 
-        # ✅ Successful login — set all flags and SKIP the rest of this render
         if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
             st.session_state.just_logged_in = True
             st.session_state.username = username
             st.toast("🎉 Login successful!")
             st.stop()
-
         else:
             st.error("Invalid username or password.")
 
-    # ⛔️ Stop app after form if login not successful
+    # Stop app if still on login screen
     st.stop()
 
 # --- TRANSITION SPLASH (shown only immediately after login) ---

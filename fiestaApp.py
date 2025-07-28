@@ -3,6 +3,35 @@ import string
 import pandas as pd
 import streamlit as st
 
+# --- Add this at the top of your Streamlit app ---
+
+# Predefined "usernames" and passwords
+USER_CREDENTIALS = {
+    "jacqui": "Nicotrico123!",  # change to your secret pass!
+    "dev": "secure2024"
+}
+
+# Session state for login
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    st.title("🔐 Login Required")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    login_button = st.button("Login")
+
+    if login_button:
+        if USER_CREDENTIALS.get(username) == password:
+            st.session_state.logged_in = True
+            st.toast("🎉 Login successful!")
+            st.experimental_rerun()
+        else:
+            st.error("Invalid username or password.")
+    st.stop()
+
+
 st.set_page_config(page_title="Secure Code Generator", layout="centered")
 
 st.title("🔐 16-Digit Code Generator")

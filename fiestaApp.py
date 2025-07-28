@@ -11,39 +11,41 @@ USER_CREDENTIALS = st.secrets["users"]
 import streamlit as st
 import time
 
-# --- Session state setup ---
-# --- Initialize session state ---
-# --- Session state setup ---
+# --- Session State Setup ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "just_logged_in" not in st.session_state:
     st.session_state.just_logged_in = False
+if "login_submitted" not in st.session_state:
+    st.session_state.login_submitted = False
 
-# --- LOGIN FORM ---
-if not st.session_state.logged_in:
+# --- LOGIN SCREEN ---
+if not st.session_state.logged_in and not st.session_state.login_submitted:
     st.title("🔐 Login Required")
 
-    # ✅ Login form captures Enter key AND button clicks
     with st.form("login_form"):
         st.text_input("Username", key="login_username")
         st.text_input("Password", type="password", key="login_password")
-        login_submitted = st.form_submit_button("Login")
+        submitted = st.form_submit_button("Login")
 
-    if login_submitted:
-        username = st.session_state.login_username
-        password = st.session_state.login_password
+    if submitted:
+        st.session_state.login_submitted = True  # Freeze form state on first submission
+        st.stop()
 
-        if username in st.secrets["users"] and st.secrets["users"][username] == password:
-            st.session_state.logged_in = True
-            st.session_state.just_logged_in = True
-            st.session_state.username = username
-            st.toast("🎉 Login successful!")
-            st.stop()
-        else:
-            st.error("Invalid username or password.")
+# --- LOGIN VALIDATION (after form submit only once) ---
+if st.session_state.login_submitted and not st.session_state.logged_in:
+    username = st.session_state.login_username
+    password = st.session_state.login_password
 
-    # Stop app if still on login screen
-    st.stop()
+    if username in st.secrets["users"] and st.secrets["users"][username] == password:
+        st.session_state.logged_in = True
+        st.session_state.just_logged_in = True
+        st.session_state.username = username
+        st.toast("🎉 Login successful!")
+    else:
+        st.error("Invalid username or password.")
+        st.session_state.login_submitted = False  # Reset form state
+        st.stop()
 
 # --- TRANSITION SPLASH (shown only immediately after login) ---
 if st.session_state.just_logged_in:

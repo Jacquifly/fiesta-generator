@@ -17,7 +17,6 @@ if "logged_in" not in st.session_state:
 if "just_logged_in" not in st.session_state:
     st.session_state.just_logged_in = False
 
-# --- LOGIN LOGIC ---
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
@@ -35,10 +34,12 @@ if not st.session_state.logged_in:
             st.session_state.username = username
             st.session_state.just_logged_in = True
             st.toast("🎉 Login successful!")
+
+            # 🛑 HARD STOP – prevent any other part of the app from running this cycle
+            st.experimental_rerun()
         else:
             st.error("Invalid username or password.")
 
-    # 🛑 STOP here if not logged in
     st.stop()
 
 # --- TRANSITION SPLASH (shown only immediately after login) ---

@@ -31,29 +31,40 @@ if not st.session_state.logged_in:
         else:
             st.error("Invalid username or password.")
         st.stop()
-#  Transition Cuteness
+# 💫 Optional Transition Effect (goes right after the login form section)
 if st.session_state.get("just_logged_in"):
-    st.empty()  # Clear the login form space
-    st.markdown("## ✨ Welcome, " + st.session_state.username + "!")
-    st.markdown("Loading your dashboard... please hold your pixels 🪄")
-    with st.spinner("Spinning up your magical interface..."):
+    st.empty()  # Optional: clears any lingering form content
+
+    # Styled animated "splash screen"
+    st.markdown(
+        """
+        <style>
+        .center-text {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            padding-top: 50px;
+            color: #5E548E;
+        }
+        .sub-text {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(f'<div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>', unsafe_allow_html=True)
+
+    # Add spinner to delay transition
+    with st.spinner("Preparing your dashboard..."):
         time.sleep(2)
-    st.session_state.just_logged_in = False  # Clear flag after splash
 
-st.markdown(
-    """
-    <style>
-    .center-text {
-        text-align: center;
-        font-size: 26px;
-        padding-top: 20px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    st.session_state.just_logged_in = False  # Clear flag so it doesn't repeat
 
-st.markdown('<div class="center-text">✨ Welcome, {}! ✨<br>Loading your dashboard...</div>'.format(st.session_state.username), unsafe_allow_html=True)
 
 #  Code Generator Page
 st.set_page_config(page_title="Secure Code Generator", layout="centered")

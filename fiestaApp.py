@@ -85,6 +85,28 @@ if st.session_state.just_logged_in:
     splash.empty()
     st.session_state.just_logged_in = False
 
+# --- SIDEBAR CONTROLS ---
+with st.sidebar:
+    st.markdown("### 👤 User Menu")
+    st.markdown(f"Logged in as: `{st.session_state.username}`")
+
+    if st.button("🚪 Log Out"):
+        st.session_state.logged_in = False
+        st.session_state.username = None
+        st.session_state.just_logged_in = False
+        st.toast("🧼 You’ve been logged out.")
+        st.stop()
+
+# --- TOP BAR USER INFO ---
+st.markdown(
+    f"""
+    <div style='text-align: right; font-size: 14px; color: #aaa; padding-bottom: 0.5rem;'>
+        Logged in as: <strong style='color: #f5f5f5;'>{st.session_state.username}</strong>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 #  Code Generator Page
 st.set_page_config(page_title="Secure Code Generator", layout="centered")
 

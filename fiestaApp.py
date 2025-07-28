@@ -59,16 +59,20 @@ if st.session_state.just_logged_in:
     
 # --- APP STARTS HERE
 if st.session_state.logged_in:
-    # -- SIDEBAR USER MENU --
-    with st.sidebar:
-        st.markdown("### 👤 User Menu")
-        st.markdown(f"Logged in as: `{st.session_state.username}`")
-        if st.button("🚪 Log Out"):
-            st.session_state.logged_in = False
-            st.session_state.username = None
-            st.session_state.just_logged_in = False
-            st.toast("🧼 Logged out.")
-            st.stop()  # Optional: rerender safely
+# -- SIDEBAR USER MENU --
+with st.sidebar:
+    st.markdown("### 👤 User Menu")
+    st.markdown(f"Logged in as: `{st.session_state.username}`")
+    
+    if st.button("🚪 Log Out"):
+        # Reset all login/session flags
+        st.session_state.logged_in = False
+        st.session_state.username = None
+        st.session_state.just_logged_in = False
+        st.toast("🧼 You've been logged out.")
+
+        # ❌ Don't render any more of the app
+        st.stop()
 
     # -- TOP USER BANNER --
     st.markdown(

@@ -8,9 +8,16 @@ import time
 USER_CREDENTIALS = st.secrets["users"]
 
 #  Login block
+import streamlit as st
+import time
+
+# --- Session state setup ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+if "just_logged_in" not in st.session_state:
+    st.session_state.just_logged_in = False
 
+# --- LOGIN LOGIC ---
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
@@ -26,16 +33,16 @@ if not st.session_state.logged_in:
         if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
             st.session_state.username = username
-            st.session_state.just_logged_in = True 
+            st.session_state.just_logged_in = True
             st.toast("🎉 Login successful!")
         else:
             st.error("Invalid username or password.")
-        st.stop()
-# 💫 Optional Transition Effect (goes right after the login form section)
-if st.session_state.get("just_logged_in"):
-    st.empty()  # Optional: clears any lingering form content
 
-    # Styled animated "splash screen"
+    # 🛑 STOP here if not logged in
+    st.stop()
+
+# --- TRANSITION SPLASH (shown only immediately after login) ---
+if st.session_state.just_logged_in:
     st.markdown(
         """
         <style>
@@ -59,11 +66,10 @@ if st.session_state.get("just_logged_in"):
     st.markdown(f'<div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>', unsafe_allow_html=True)
 
-    # Add spinner to delay transition
     with st.spinner("Preparing your dashboard..."):
         time.sleep(2)
 
-    st.session_state.just_logged_in = False  # Clear flag so it doesn't repeat
+    st.session_state.just_logged_in = False
 
 
 #  Code Generator Page

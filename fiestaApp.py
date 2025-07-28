@@ -36,13 +36,11 @@ col1, col2 = st.columns([1, 1])
 
 # 🎯 Generate or Regenerate button
 with col1:
-    if st.session_state.generated_once:
-        if st.button("🔁 Regenerate Codes"):
-            st.session_state.codes = generate_codes(prefix, num_codes)
-    else:
-        if st.button("🚀 Generate Codes"):
-            st.session_state.codes = generate_codes(prefix, num_codes)
-            st.session_state.generated_once = True
+    button_label = "🔁 Regenerate Codes" if st.session_state.generated_once else "🚀 Generate Codes"
+    if st.button(button_label):
+        st.session_state.codes = generate_codes(prefix, num_codes)
+        st.session_state.generated_once = True
+
 
 # ❌ Clear button (only visible *after* generation)
 with col2:

@@ -17,95 +17,68 @@ if "logged_in" not in st.session_state:
 if "just_logged_in" not in st.session_state:
     st.session_state.just_logged_in = False
 
-# --- AUTHENTICATION FUNCTION ---
-def check_login(username, password):
-    return username in st.secrets["users"] and st.secrets["users"][username] == password
-
-# --- LOGIN FORM ---
+# Login screen if not logged in
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
-    with st.form("login_form", clear_on_submit=False):
+    with st.form("login_form"):
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         submit = st.form_submit_button("Login")
 
     if submit:
-        if check_login(username, password):
+        if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
-            st.session_state.username = username
             st.session_state.just_logged_in = True
+            st.session_state.username = username
             st.toast("🎉 Login successful!")
         else:
             st.error("Invalid username or password.")
 
-    # 🚫 HARD STOP to prevent app from rendering underneath
-    st.stop()
+    st.stop()  # 🔐 HARD stop so nothing else runs
 
-# --- OPTIONAL SPLASH AFTER LOGIN ---
+# --- Splash after login
 if st.session_state.just_logged_in:
     splash = st.empty()
 
     splash.markdown(
         f"""
-        <style>
-        @keyframes fadeOut {{
-            0% {{ opacity: 1; }}
-            90% {{ opacity: 1; }}
-            100% {{ opacity: 0; display: none; }}
-        }}
-        .fade-out {{
-            animation: fadeOut 2s ease forwards;
-        }}
-        .center-text {{
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            padding-top: 50px;
-            color: #A98BFF;
-        }}
-        .sub-text {{
-            text-align: center;
-            font-size: 18px;
-            color: #aaa;
-        }}
-        </style>
-
         <div class="fade-out">
-            <div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>
-            <div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>
+            <h2 style='text-align:center; color:#A98BFF;'>✨ Welcome, {st.session_state.username}! ✨</h2>
+            <p style='text-align:center; color:#888;'>Loading your dashboard... please hold your pixels 🪄</p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    with st.spinner("Preparing your dashboard..."):
+    with st.spinner("Warming up the code cauldron..."):
         time.sleep(2)
 
     splash.empty()
     st.session_state.just_logged_in = False
+    
+# --- APP STARTS HERE
+if st.session_state.logged_in:
+    # -- SIDEBAR USER MENU --
+    with st.sidebar:
+        st.markdown("### 👤 User Menu")
+        st.markdown(f"Logged in as: `{st.session_state.username}`")
+        if st.button("🚪 Log Out"):
+            st.session_state.logged_in = False
+            st.session_state.username = None
+            st.session_state.just_logged_in = False
+            st.toast("🧼 Logged out.")
+            st.stop()  # Optional: rerender safely
 
-# --- SIDEBAR CONTROLS ---
-with st.sidebar:
-    st.markdown("### 👤 User Menu")
-    st.markdown(f"Logged in as: `{st.session_state.username}`")
-
-    if st.button("🚪 Log Out"):
-        st.session_state.logged_in = False
-        st.session_state.username = None
-        st.session_state.just_logged_in = False
-        st.toast("🧼 You’ve been logged out.")
-        st.stop()
-
-# --- TOP BAR USER INFO ---
-st.markdown(
-    f"""
-    <div style='text-align: right; font-size: 14px; color: #aaa; padding-bottom: 0.5rem;'>
-        Logged in as: <strong style='color: #f5f5f5;'>{st.session_state.username}</strong>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    # -- TOP USER BANNER --
+    st.markdown(
+        f"""
+        <div style='text-align: right; font-size: 14px; color: #aaa; padding-bottom: 0.5rem;'>
+            Logged in as: <strong style='color: #f5f5f5;'>{st.session_state.username}</strong>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 #  Code Generator Page
 st.set_page_config(page_title="Secure Code Generator", layout="centered")

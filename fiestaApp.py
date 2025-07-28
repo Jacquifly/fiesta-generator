@@ -8,20 +8,28 @@ import streamlit as st
 # Read credentials from secrets.toml
 USER_CREDENTIALS = st.secrets["users"]
 
+#  Login block
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    # Use input keys to persist values across reruns
+    with st.form("login_form", clear_on_submit=False):
+        st.text_input("Username", key="login_username")
+        st.text_input("Password", type="password", key="login_password")
+        submit_login = st.form_submit_button("Login")
 
-    if st.button("Login"):
+    if submit_login:
+        username = st.session_state.login_username
+        password = st.session_state.login_password
+
         if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
-            st.session_state.username = username  # Store username for later
+            st.session_state.username = username
             st.toast("🎉 Login successful!")
+            st.experimental_rerun()
         else:
             st.error("Invalid username or password.")
     st.stop()

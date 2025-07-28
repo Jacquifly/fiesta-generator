@@ -11,81 +11,78 @@ USER_CREDENTIALS = st.secrets["users"]
 import streamlit as st
 import time
 
-# --- Session State Setup ---
+# --- Setup session state ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "just_logged_in" not in st.session_state:
     st.session_state.just_logged_in = False
-if "login_submitted" not in st.session_state:
-    st.session_state.login_submitted = False
 
-# --- LOGIN SCREEN ---
-if not st.session_state.logged_in and not st.session_state.login_submitted:
+# --- AUTHENTICATION FUNCTION ---
+def check_login(username, password):
+    return username in st.secrets["users"] and st.secrets["users"][username] == password
+
+# --- LOGIN FORM ---
+if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
-    with st.form("login_form"):
-        st.text_input("Username", key="login_username")
-        st.text_input("Password", type="password", key="login_password")
-        submitted = st.form_submit_button("Login")
+    with st.form("login_form", clear_on_submit=False):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Login")
 
-    if submitted:
-        st.session_state.login_submitted = True  # Freeze form state on first submission
-        st.stop()
+    if submit:
+        if check_login(username, password):
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.session_state.just_logged_in = True
+            st.toast("🎉 Login successful!")
+        else:
+            st.error("Invalid username or password.")
 
-# --- LOGIN VALIDATION (after form submit only once) ---
-if st.session_state.login_submitted and not st.session_state.logged_in:
-    username = st.session_state.login_username
-    password = st.session_state.login_password
+    # 🚫 HARD STOP to prevent app from rendering underneath
+    st.stop()
 
-    if username in st.secrets["users"] and st.secrets["users"][username] == password:
-        st.session_state.logged_in = True
-        st.session_state.just_logged_in = True
-        st.session_state.username = username
-        st.toast("🎉 Login successful!")
-    else:
-        st.error("Invalid username or password.")
-        st.session_state.login_submitted = False  # Reset form state
-        st.stop()
-
-# --- TRANSITION SPLASH (shown only immediately after login) ---
+# --- OPTIONAL SPLASH AFTER LOGIN ---
 if st.session_state.just_logged_in:
-    splash_placeholder = st.empty()  # 🔮 Temporary zone for the splash
+    splash = st.empty()
 
-    # Fill it with the splash message
-    splash_placeholder.markdown(
-        """
+    splash.markdown(
+        f"""
         <style>
-        .center-text {
+        @keyframes fadeOut {{
+            0% {{ opacity: 1; }}
+            90% {{ opacity: 1; }}
+            100% {{ opacity: 0; display: none; }}
+        }}
+        .fade-out {{
+            animation: fadeOut 2s ease forwards;
+        }}
+        .center-text {{
             text-align: center;
             font-size: 28px;
             font-weight: bold;
             padding-top: 50px;
             color: #A98BFF;
-        }
-        .sub-text {
+        }}
+        .sub-text {{
             text-align: center;
             font-size: 18px;
             color: #aaa;
-        }
+        }}
         </style>
+
+        <div class="fade-out">
+            <div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>
+            <div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>
+        </div>
         """,
         unsafe_allow_html=True
     )
-    splash_placeholder.markdown(
-        f'<div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>',
-        unsafe_allow_html=True
-    )
-    splash_placeholder.markdown(
-        '<div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>',
-        unsafe_allow_html=True
-    )
 
-    # Spinner delay
-    with st.spinner("Warming up your code cauldron..."):
+    with st.spinner("Preparing your dashboard..."):
         time.sleep(2)
 
-    # 💥 Clear the splash after the delay
-    splash_placeholder.empty()
+    splash.empty()
     st.session_state.just_logged_in = False
 
 #  Code Generator Page

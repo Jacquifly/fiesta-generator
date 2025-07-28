@@ -58,7 +58,7 @@ if st.session_state.just_logged_in:
     st.session_state.just_logged_in = False
     
 # --- APP STARTS HERE
-if st.session_state.logged_in:
+    if st.session_state.logged_in:
 # -- SIDEBAR USER MENU --
 with st.sidebar:
     st.markdown("### 👤 User Menu")

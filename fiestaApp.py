@@ -43,7 +43,10 @@ if not st.session_state.logged_in:
 
 # --- TRANSITION SPLASH (shown only immediately after login) ---
 if st.session_state.just_logged_in:
-    st.markdown(
+    splash_placeholder = st.empty()  # 🔮 Temporary zone for the splash
+
+    # Fill it with the splash message
+    splash_placeholder.markdown(
         """
         <style>
         .center-text {
@@ -51,26 +54,33 @@ if st.session_state.just_logged_in:
             font-size: 28px;
             font-weight: bold;
             padding-top: 50px;
-            color: #5E548E;
+            color: #A98BFF;
         }
         .sub-text {
             text-align: center;
             font-size: 18px;
-            color: #888;
+            color: #aaa;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
+    splash_placeholder.markdown(
+        f'<div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>',
+        unsafe_allow_html=True
+    )
+    splash_placeholder.markdown(
+        '<div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>',
+        unsafe_allow_html=True
+    )
 
-    st.markdown(f'<div class="center-text">✨ Welcome, {st.session_state.username}! ✨</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-text">Loading your dashboard... please hold your pixels 🪄</div>', unsafe_allow_html=True)
-
-    with st.spinner("Preparing your dashboard..."):
+    # Spinner delay
+    with st.spinner("Warming up your code cauldron..."):
         time.sleep(2)
 
+    # 💥 Clear the splash after the delay
+    splash_placeholder.empty()
     st.session_state.just_logged_in = False
-
 
 #  Code Generator Page
 st.set_page_config(page_title="Secure Code Generator", layout="centered")

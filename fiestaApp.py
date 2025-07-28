@@ -40,7 +40,7 @@ with col1:
     if st.button(button_label):
         st.session_state.codes = generate_codes(prefix, num_codes)
         st.session_state.generated_once = True
-
+        st.toast("🎉 Codes generated successfully!")  # This is our confetti vibe!
 
 # ❌ Clear button (only visible *after* generation)
 with col2:

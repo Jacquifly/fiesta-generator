@@ -15,7 +15,6 @@ if "logged_in" not in st.session_state:
 if not st.session_state.logged_in:
     st.title("🔐 Login Required")
 
-    # Use input keys to persist values across reruns
     with st.form("login_form", clear_on_submit=False):
         st.text_input("Username", key="login_username")
         st.text_input("Password", type="password", key="login_password")
@@ -29,10 +28,9 @@ if not st.session_state.logged_in:
             st.session_state.logged_in = True
             st.session_state.username = username
             st.toast("🎉 Login successful!")
-            st.experimental_rerun()
         else:
             st.error("Invalid username or password.")
-    st.stop()
+        st.stop()
 
 st.set_page_config(page_title="Secure Code Generator", layout="centered")
 

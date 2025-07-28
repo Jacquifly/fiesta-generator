@@ -2,8 +2,7 @@ import random
 import string
 import pandas as pd
 import streamlit as st
-
-import streamlit as st
+import time
 
 # Read credentials from secrets.toml
 USER_CREDENTIALS = st.secrets["users"]
@@ -27,11 +26,36 @@ if not st.session_state.logged_in:
         if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
             st.session_state.username = username
+            st.session_state.just_logged_in = True 
             st.toast("🎉 Login successful!")
         else:
             st.error("Invalid username or password.")
         st.stop()
+#  Transition Cuteness
+if st.session_state.get("just_logged_in"):
+    st.empty()  # Clear the login form space
+    st.markdown("## ✨ Welcome, " + st.session_state.username + "!")
+    st.markdown("Loading your dashboard... please hold your pixels 🪄")
+    with st.spinner("Spinning up your magical interface..."):
+        time.sleep(2)
+    st.session_state.just_logged_in = False  # Clear flag after splash
 
+st.markdown(
+    """
+    <style>
+    .center-text {
+        text-align: center;
+        font-size: 26px;
+        padding-top: 20px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown('<div class="center-text">✨ Welcome, {}! ✨<br>Loading your dashboard...</div>'.format(st.session_state.username), unsafe_allow_html=True)
+
+#  Code Generator Page
 st.set_page_config(page_title="Secure Code Generator", layout="centered")
 
 st.title("🔐 16-Digit Code Generator")

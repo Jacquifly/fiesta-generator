@@ -18,8 +18,9 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+        if username in st.secrets["users"] and st.secrets["users"][username] == password:
             st.session_state.logged_in = True
+            st.session_state.username = username  # Store username for later
             st.toast("🎉 Login successful!")
         else:
             st.error("Invalid username or password.")
